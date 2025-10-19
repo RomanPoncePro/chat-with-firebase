@@ -97,10 +97,20 @@ export const useAuthActions = () => {
       setLoading(true);
     }
   };
+
+  const logout = async (): Promise<void> => {
+    try {
+      await auth.signOut();
+    } catch (error) {
+      console.log("Ocurrio un error", error);
+    }
+  };
+
   return {
     login,
     register,
     loading,
     singWithGoogle,
+    logout,
   };
 };
