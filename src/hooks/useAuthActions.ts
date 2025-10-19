@@ -2,6 +2,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup,
   type AuthError,
 } from "firebase/auth";
 import { useState } from "react";
@@ -50,6 +52,11 @@ export const useAuthActions = () => {
         data.email,
         data.password
       );
+      if (currentUser.user) {
+        await updateProfile(currentUser.user, {
+          displayName: data.displayname,
+        });
+      }
 
       return {
         success: true,
@@ -66,9 +73,34 @@ export const useAuthActions = () => {
     }
   };
 
+  const singWithGoogle = async (): Promise<AuthActionResponse> => {
+    try {
+      setLoading(true);
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      if (result.user) {
+        await updateProfile(result.user, {
+          displayName: result.user.displayName || "",
+        });
+      }
+      return {
+        success: true,
+        error: null,
+      };
+    } catch (error) {
+      const authError = error as AuthError;
+      return {
+        success: true,
+        error: authError,
+      };
+    } finally {
+      setLoading(true);
+    }
+  };
   return {
     login,
     register,
     loading,
+    singWithGoogle,
   };
 };
