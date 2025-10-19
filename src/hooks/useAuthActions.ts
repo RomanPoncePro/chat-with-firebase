@@ -73,7 +73,7 @@ export const useAuthActions = () => {
     }
   };
 
-  const singWithGoogle = async (): Promise<AuthActionResponse> => {
+  const loginWithGoogle = async (): Promise<AuthActionResponse> => {
     try {
       setLoading(true);
       const provider = new GoogleAuthProvider();
@@ -98,11 +98,19 @@ export const useAuthActions = () => {
     }
   };
 
-  const logout = async (): Promise<void> => {
+  const logout = async (): Promise<AuthActionResponse> => {
     try {
       await auth.signOut();
+      return {
+        success: true,
+        error: null,
+      };
     } catch (error) {
-      console.log("Ocurrio un error", error);
+      const authError = error as AuthError;
+      return {
+        success: true,
+        error: authError,
+      };
     }
   };
 
@@ -110,7 +118,7 @@ export const useAuthActions = () => {
     login,
     register,
     loading,
-    singWithGoogle,
+    loginWithGoogle,
     logout,
   };
 };
